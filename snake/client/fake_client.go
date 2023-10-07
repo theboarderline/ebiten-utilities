@@ -60,13 +60,13 @@ func (g *FakeClient) GetMessage() (events.Event, error) {
 	}
 
 	if rand.Float64() < 0.25 {
-		event.Message = string(snake.DirectionUp)
+		event.Message = string(0)
 	} else if rand.Float64() < 0.5 {
-		event.Message = string(snake.DirectionDown)
+		event.Message = string(1)
 	} else if rand.Float64() < 0.75 {
-		event.Message = string(snake.DirectionLeft)
+		event.Message = string(2)
 	} else {
-		event.Message = string(snake.DirectionRight)
+		event.Message = string(3)
 	}
 
 	return event, nil
