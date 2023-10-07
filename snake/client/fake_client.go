@@ -4,6 +4,7 @@ import (
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"github.com/theboarderline/ebiten-utilities/snake/param"
+	"math/rand"
 )
 
 type FakeClient struct {
@@ -43,11 +44,31 @@ func (g *FakeClient) SendMessage(event events.Event) error {
 }
 
 func (g *FakeClient) GetMessage() (events.Event, error) {
-	return events.Event{
+
+	if rand.Float64() < 0.8 {
+		return events.Event{}, nil
+	}
+
+	event := events.Event{
 		PlayerName: "enemy",
 		Type:       "input",
-		Message:    "up",
-	}, nil
+	}
+
+	if rand.Float64() < 0.5 {
+		if rand.Float64() < 0.5 {
+			event.Message = "up"
+		} else {
+			event.Message = "left"
+		}
+	} else {
+		if rand.Float64() < 0.5 {
+			event.Message = "down"
+		} else {
+			event.Message = "right"
+		}
+	}
+
+	return event, nil
 }
 
 func (g *FakeClient) Cleanup() error {
