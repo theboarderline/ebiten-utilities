@@ -6,7 +6,7 @@ import (
 
 func (g *GameserverClient) Register(name string) error {
 	event := events.Event{
-		Type:    "PLAYER_CONNECT",
+		Type:    events.PLAYER_CONNECT,
 		Message: name,
 	}
 
@@ -15,7 +15,7 @@ func (g *GameserverClient) Register(name string) error {
 
 func (g *GameserverClient) Deregister(name string) error {
 	event := events.Event{
-		Type:    "PLAYER_DISCONNECT",
+		Type:    events.PLAYER_DISCONNECT,
 		Message: name,
 	}
 
