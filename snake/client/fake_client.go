@@ -45,13 +45,13 @@ func (g *FakeClient) SendMessage(event events.Event) error {
 
 func (g *FakeClient) GetMessage() (events.Event, error) {
 
-	if rand.Float64() < 0.8 {
+	if rand.Float64() < 0.99 {
 		return events.Event{}, nil
 	}
 
 	event := events.Event{
 		PlayerName: "enemy",
-		Type:       "input",
+		Type:       events.PLAYER_INPUT,
 	}
 
 	if rand.Float64() < 0.5 {
