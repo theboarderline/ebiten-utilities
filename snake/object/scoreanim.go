@@ -20,6 +20,7 @@ along with snake-ebiten. If not, see <https://www.gnu.org/licenses/>.
 package object
 
 import (
+	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"image/color"
 	"strconv"
 
@@ -45,7 +46,7 @@ type ScoreAnim struct {
 	c.TeleCompTriang
 	pos       c.Vec32
 	alpha     uint8
-	direction DirectionT
+	direction events.DirectionT
 	drawOpts  ebiten.DrawTrianglesOptions
 }
 
@@ -72,7 +73,7 @@ func NewScoreAnim(pos c.Vec32) *ScoreAnim {
 			Y: pos.Y - scoreAnimShiftY,
 		},
 		alpha:     param.ColorScore.A,
-		direction: DirectionUp,
+		direction: events.DirectionUp,
 	}
 	newAnim.SetColor(&param.ColorScore)
 

@@ -75,7 +75,7 @@ func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float
 		name = fmt.Sprintf("Snake %f-%f", headCenter.X, headCenter.Y)
 	}
 
-	if direction >= events.DirectionTotal {
+	if direction.IsValid() {
 		panic("direction parameter is invalid.")
 	}
 	if headCenter.X > param.ScreenWidth {
@@ -123,7 +123,7 @@ func NewSnakeFromResponse(response string) (*Snake, error) {
 }
 
 func NewSnakeRandDir(name string, headCenter c.Vec64, initialLength uint16, speed float64, color *color.RGBA) *Snake {
-	direction := events.DirectionT(rand.Intn(int(events.DirectionTotal)))
+	direction := NewRandomDirection()
 	return NewSnake(name, headCenter, initialLength, speed, direction, color)
 }
 

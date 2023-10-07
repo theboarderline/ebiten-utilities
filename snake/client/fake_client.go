@@ -50,25 +50,15 @@ func (g *FakeClient) SendMessage(event events.Event) error {
 
 func (g *FakeClient) GetMessage() (events.Event, error) {
 
-	if rand.Float64() < 0.99 {
+	if rand.Float64() < 0.95 {
 		return events.Event{}, nil
 	}
 
 	event := events.Event{
-		PlayerName: "enemy",
-		Type:       events.PLAYER_INPUT,
+		PlayerName:     "enemy",
+		Type:           events.PLAYER_INPUT,
+		InputDirection: events.NewRandomDirection(),
 	}
-
-	if rand.Float64() < 0.25 {
-		event.InputDirection = events.DirectionUp
-	} else if rand.Float64() < 0.5 {
-		event.InputDirection = events.DirectionDown
-	} else if rand.Float64() < 0.75 {
-		event.InputDirection = events.DirectionLeft
-	} else {
-		event.InputDirection = events.DirectionRight
-	}
-
 	return event, nil
 }
 
