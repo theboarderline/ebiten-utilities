@@ -75,15 +75,18 @@ func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float
 		name = fmt.Sprintf("Snake %f-%f", headCenter.X, headCenter.Y)
 	}
 
-	if direction.IsValid() {
-		panic("direction parameter is invalid.")
+	if !direction.IsValid() {
+		direction = events.DirectionRight
 	}
+
 	if headCenter.X > param.ScreenWidth {
-		panic("Initial x position of the snake is off-screen.")
+		headCenter.X = param.ScreenWidth / 2
 	}
+
 	if headCenter.Y > param.ScreenHeight {
-		panic("Initial y position of the snake is off-screen.")
+		headCenter.Y = param.ScreenHeight / 2
 	}
+
 	if isVertical := direction.IsVertical(); (isVertical && (initialLength > param.ScreenHeight)) ||
 		(!isVertical && (initialLength > param.ScreenWidth)) {
 		panic("Initial snake intersects itself.")
