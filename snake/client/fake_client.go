@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"github.com/theboarderline/ebiten-utilities/snake/param"
 )
@@ -37,12 +38,16 @@ func (g *FakeClient) Deregister(name string) error {
 	return nil
 }
 
-func (g *FakeClient) SendMessage(message []byte) error {
+func (g *FakeClient) SendMessage(event events.Event) error {
 	return nil
 }
 
-func (g *FakeClient) GetMessage() (string, error) {
-	return "{\"name\":\"Enemy\", \"score\":100}", nil
+func (g *FakeClient) GetMessage() (events.Event, error) {
+	return events.Event{
+		PlayerName: "enemy",
+		Type:       "input",
+		Message:    "up",
+	}, nil
 }
 
 func (g *FakeClient) Cleanup() error {

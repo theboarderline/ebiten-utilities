@@ -21,6 +21,10 @@
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
+```bash
+go get github.com/theboarderline/ebiten-utilities/snake
+```
+
 ## ✍️ Authors <a name = "authors"></a>
 
 - [@walkerobrien](https://github.com/walkerobrien) 
