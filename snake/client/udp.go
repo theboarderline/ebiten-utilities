@@ -43,6 +43,6 @@ func (g *GameserverClient) GetMessage() (event events.Event, err error) {
 		return events.Event{}, err
 	}
 
-	log.Debug().Msgf("Received UDP message: %s", string(received))
+	log.Debug().Msgf("Received UDP message: %s", string(received[:length]))
 	return event, nil
 }
