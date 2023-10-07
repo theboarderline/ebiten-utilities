@@ -20,6 +20,7 @@ along with snake-ebiten. If not, see <https://www.gnu.org/licenses/>.
 package snake
 
 import (
+	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"image/color"
 	"math"
 
@@ -29,16 +30,16 @@ import (
 )
 
 type Unit struct {
-	HeadCenter      c.Vec64          `json:"headCenter"`
-	length          float64          `json:"length"`
-	Direction       DirectionT       `json:"direction"`
-	CompCollision   c.TeleComp       `json:"collision"`
-	CompBody        c.TeleCompImage  `json:"compBody"`
-	CompTriangDebug c.TeleCompTriang `json:"compTriangDebug"`
-	CompTriangHead  c.TeleCompTriang `json:"compTriangHead"`
-	CompTriangTail  c.TeleCompTriang `json:"compTriangTail"`
-	Next            *Unit            `json:"next"`
-	prev            *Unit            `json:"prev"`
+	HeadCenter      c.Vec64           `json:"headCenter"`
+	length          float64           `json:"length"`
+	Direction       events.DirectionT `json:"direction"`
+	CompCollision   c.TeleComp        `json:"collision"`
+	CompBody        c.TeleCompImage   `json:"compBody"`
+	CompTriangDebug c.TeleCompTriang  `json:"compTriangDebug"`
+	CompTriangHead  c.TeleCompTriang  `json:"compTriangHead"`
+	CompTriangTail  c.TeleCompTriang  `json:"compTriangTail"`
+	Next            *Unit             `json:"next"`
+	prev            *Unit             `json:"prev"`
 }
 
 func NewUnit(headCenter c.Vec64, length float64, direction DirectionT, color *color.RGBA) *Unit {
