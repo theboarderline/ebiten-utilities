@@ -68,9 +68,11 @@ type Snake struct {
 	drawOptsHead    ebiten.DrawTrianglesShaderOptions `json:"drawOptsHead"`
 }
 
-func NewSnake(headCenter c.Vec64, initialLength uint16, speed float64, direction DirectionT, color *color.RGBA) *Snake {
+func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float64, direction DirectionT, color *color.RGBA) *Snake {
 
-	name := fmt.Sprintf("Snake %f-%f", headCenter.X, headCenter.Y)
+	if name == "" {
+		name = fmt.Sprintf("Snake %f-%f", headCenter.X, headCenter.Y)
+	}
 
 	if direction >= DirectionTotal {
 		panic("direction parameter is invalid.")
@@ -119,21 +121,25 @@ func NewSnakeFromResponse(response string) (*Snake, error) {
 	return &s, nil
 }
 
-func NewSnakeRandDir(headCenter c.Vec64, initialLength uint16, speed float64, color *color.RGBA) *Snake {
+func NewSnakeRandDir(name string, headCenter c.Vec64, initialLength uint16, speed float64, color *color.RGBA) *Snake {
 	direction := DirectionT(rand.Intn(int(DirectionTotal)))
-	return NewSnake(headCenter, initialLength, speed, direction, color)
+	return NewSnake(name, headCenter, initialLength, speed, direction, color)
 }
 
-func NewSnakeRandDirLoc(initialLength uint16, speed float64, color *color.RGBA) *Snake {
+func NewSnakeRandDirLoc(name string, initialLength uint16, speed float64, color *color.RGBA) *Snake {
 	headCenter := c.Vec64{
 		X: float64(rand.Intn(param.ScreenWidth)),
 		Y: float64(rand.Intn(param.ScreenHeight)),
 	}
-	return NewSnakeRandDir(headCenter, initialLength, speed, color)
+	return NewSnakeRandDir(name, headCenter, initialLength, speed, color)
 }
 
-func NewRandSnake() *Snake {
-	return NewSnakeRandDirLoc(param.SnakeLength, param.SnakeSpeedInitial, &param.ColorSnake1)
+func NewRandSnake(name string) *Snake {
+	if name == "" {
+		randNumber := rand.Intn(100)
+		name = fmt.Sprintf("Snake %d", randNumber)
+	}
+	return NewSnakeRandDirLoc(name, param.SnakeLength, param.SnakeSpeedInitial, &param.ColorSnake1)
 }
 
 func (s *Snake) Update(distToFood float32) {

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/go-faker/faker/v4"
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"github.com/theboarderline/ebiten-utilities/snake/param"
@@ -11,10 +12,14 @@ type FakeClient struct {
 	Players map[string]*snake.Snake
 }
 
-func NewFakeClient() *FakeClient {
+func NewFakeClient(name string) *FakeClient {
+	if name == "" {
+		name = faker.Name()
+	}
+
 	return &FakeClient{
 		Players: map[string]*snake.Snake{
-			"enemy": snake.NewSnakeRandDirLoc(param.SnakeLength, param.SnakeSpeedInitial, &param.ColorSnake2),
+			name: snake.NewSnakeRandDirLoc(name, param.SnakeLength, param.SnakeSpeedInitial, &param.ColorSnake2),
 		},
 	}
 }

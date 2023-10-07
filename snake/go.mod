@@ -3,6 +3,7 @@ module github.com/theboarderline/ebiten-utilities/snake
 go 1.20
 
 require (
+	github.com/go-faker/faker/v4 v4.2.0
 	github.com/hajimehoshi/ebiten/v2 v2.6.1
 	github.com/onsi/ginkgo/v2 v2.12.1
 	github.com/onsi/gomega v1.28.0

@@ -27,7 +27,7 @@ func (g *GameserverClient) IsConnected() bool {
 
 func (g *GameserverClient) GetPlayers() map[string]*snake.Snake {
 	event := events.Event{
-		Type: "GET_PLAYERS",
+		Type: events.GET_PLAYERS,
 	}
 	if err := g.SendMessage(event); err != nil {
 		return nil
