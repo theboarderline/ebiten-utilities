@@ -123,7 +123,7 @@ func NewSnakeFromResponse(response string) (*Snake, error) {
 }
 
 func NewSnakeRandDir(name string, headCenter c.Vec64, initialLength uint16, speed float64, color *color.RGBA) *Snake {
-	direction := NewRandomDirection()
+	direction := events.NewRandomDirection()
 	return NewSnake(name, headCenter, initialLength, speed, direction, color)
 }
 
