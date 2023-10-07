@@ -1,6 +1,9 @@
 package client
 
-import "github.com/theboarderline/ebiten-utilities/snake/object/snake"
+import (
+	"github.com/theboarderline/ebiten-utilities/snake/events"
+	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
+)
 
 type Client interface {
 	// Connect description of the Go function.
@@ -35,15 +38,15 @@ type Client interface {
 
 	// SendMessage sends the given message.
 	//
-	// message: The message to send.
+	// event: The message to be sent.
 	// error: An error if the message failed to send.
-	SendMessage(message []byte) error
+	SendMessage(event events.Event) error
 
 	// GetMessage returns the message and an error.
 	//
 	// It takes no parameters.
-	// It returns a string and an error if there was an issue during retrieval.
-	GetMessage() (string, error)
+	// It returns an event and an error.
+	GetMessage() (events.Event, error)
 
 	// Cleanup is a function that performs cleanup operations.
 	//

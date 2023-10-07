@@ -1,7 +1,10 @@
 package client_test
 
 import (
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"github.com/theboarderline/ebiten-utilities/snake/client"
+	"github.com/theboarderline/ebiten-utilities/snake/events"
 )
 
 var _ = Describe("Udp", func() {
@@ -55,8 +58,8 @@ var _ = Describe("Udp", func() {
 	})
 
 	It("send and receive messages", func() {
-		message := "test"
-		Expect(gameserverClient.SendMessage([]byte(message))).To(Succeed())
+		event := events.Event{Type: "ACK"}
+		Expect(gameserverClient.SendMessage(event)).To(Succeed())
 
 		response, err := gameserverClient.GetMessage()
 		Expect(err).NotTo(HaveOccurred())

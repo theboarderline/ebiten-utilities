@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/rs/zerolog/log"
+	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"net"
 	"strings"
@@ -25,8 +26,10 @@ func (g *GameserverClient) IsConnected() bool {
 }
 
 func (g *GameserverClient) GetPlayers() map[string]*snake.Snake {
-	message := "GET_PLAYERS"
-	if err := g.SendMessage([]byte(message)); err != nil {
+	event := events.Event{
+		Type: "GET_PLAYERS",
+	}
+	if err := g.SendMessage(event); err != nil {
 		return nil
 	}
 
@@ -35,7 +38,7 @@ func (g *GameserverClient) GetPlayers() map[string]*snake.Snake {
 		return nil
 	}
 
-	return makeSnakes(response)
+	return makeSnakes(response.Message)
 }
 
 func makeSnakes(response string) map[string]*snake.Snake {
