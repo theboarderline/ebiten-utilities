@@ -59,19 +59,14 @@ func (g *FakeClient) GetMessage() (events.Event, error) {
 		Type:       events.PLAYER_INPUT,
 	}
 
-	if rand.Float64() < 0.5 {
-		if rand.Float64() < 0.5 {
-			event.Message = string(snake.DirectionUp)
-		} else {
-			event.Message = string(snake.DirectionDown)
-		}
-
+	if rand.Float64() < 0.25 {
+		event.Message = string(snake.DirectionUp)
+	} else if rand.Float64() < 0.5 {
+		event.Message = string(snake.DirectionDown)
+	} else if rand.Float64() < 0.75 {
+		event.Message = string(snake.DirectionLeft)
 	} else {
-		if rand.Float64() < 0.5 {
-			event.Message = string(snake.DirectionLeft)
-		} else {
-			event.Message = string(snake.DirectionRight)
-		}
+		event.Message = string(snake.DirectionRight)
 	}
 
 	return event, nil
