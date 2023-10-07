@@ -7,7 +7,7 @@ import (
 	"math"
 )
 
-func (s *Snake) checkSnakeIntersection() {
+func (s *Snake) CheckSnakeIntersection() {
 	curUnit := s.UnitHead.Next
 	if curUnit == nil {
 		return
@@ -26,7 +26,7 @@ func (s *Snake) checkSnakeIntersection() {
 	}
 }
 
-func (s *Snake) calcSnakeFoodDist(foodLoc c.Vec64) float32 {
+func (s *Snake) CalcSnakeFoodDist(foodLoc c.Vec64) float32 {
 	headLoc := s.UnitHead.HeadCenter
 
 	minDist := c.Distance(headLoc, foodLoc)
@@ -50,7 +50,7 @@ func (s *Snake) calcSnakeFoodDist(foodLoc c.Vec64) float32 {
 	return float32(minDist)
 }
 
-func (s *Snake) handleDirectionInput(direction DirectionT) {
+func (s *Snake) HandleDirectionInput(direction DirectionT) {
 	pressedLeft := direction == DirectionLeft
 	pressedRight := direction == DirectionRight
 	pressedUp := direction == DirectionUp
@@ -85,7 +85,7 @@ func (s *Snake) handleDirectionInput(direction DirectionT) {
 	s.TurnTo(newTurn, false)
 }
 
-func (s *Snake) checkFoodCollision(distToFood float32) bool {
+func (s *Snake) CheckFoodCollision(distToFood float32) bool {
 	if distToFood <= param.RadiusEating {
 		s.Grow()
 		return true
@@ -94,7 +94,7 @@ func (s *Snake) checkFoodCollision(distToFood float32) bool {
 	return false
 }
 
-func (s *Snake) triggerScoreAnim() *object.ScoreAnim {
+func (s *Snake) TriggerScoreAnim() *object.ScoreAnim {
 	corrCenter := s.UnitHead.HeadCenter
 
 	switch s.UnitHead.Direction {
