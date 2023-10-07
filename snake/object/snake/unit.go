@@ -42,7 +42,7 @@ type Unit struct {
 	prev            *Unit             `json:"prev"`
 }
 
-func NewUnit(headCenter c.Vec64, length float64, direction DirectionT, color *color.RGBA) *Unit {
+func NewUnit(headCenter c.Vec64, length float64, direction events.DirectionT, color *color.RGBA) *Unit {
 	newUnit := &Unit{
 		HeadCenter: headCenter,
 		length:     length,
@@ -59,7 +59,7 @@ func (u *Unit) createRectCollision() (rectColl *c.RectF32) {
 	flCenter := u.HeadCenter.Floor().To32()
 
 	switch u.Direction {
-	case DirectionRight:
+	case events.DirectionRight:
 		rectColl = c.NewRect(
 			c.Vec32{
 				X: flCenter.X - length32 + param.RadiusSnake,
@@ -67,7 +67,7 @@ func (u *Unit) createRectCollision() (rectColl *c.RectF32) {
 			},
 			c.Vec32{X: length32, Y: param.SnakeWidth},
 		)
-	case DirectionLeft:
+	case events.DirectionLeft:
 		rectColl = c.NewRect(
 			c.Vec32{
 				X: flCenter.X - param.RadiusSnake,
@@ -75,7 +75,7 @@ func (u *Unit) createRectCollision() (rectColl *c.RectF32) {
 			},
 			c.Vec32{X: length32, Y: param.SnakeWidth},
 		)
-	case DirectionUp:
+	case events.DirectionUp:
 		rectColl = c.NewRect(
 			c.Vec32{
 				X: flCenter.X - param.RadiusSnake,
@@ -83,7 +83,7 @@ func (u *Unit) createRectCollision() (rectColl *c.RectF32) {
 			},
 			c.Vec32{X: param.SnakeWidth, Y: length32},
 		)
-	case DirectionDown:
+	case events.DirectionDown:
 		rectColl = c.NewRect(
 			c.Vec32{
 				X: flCenter.X - param.RadiusSnake,
@@ -104,13 +104,13 @@ func (u *Unit) createRectDraw(rectColl *c.RectF32) (rectDraw *c.RectF32) {
 	}
 
 	switch u.Direction {
-	case DirectionRight:
+	case events.DirectionRight:
 		rectDraw = c.NewRect(c.Vec32{X: rectColl.Pos.X - param.SnakeWidth, Y: rectColl.Pos.Y}, c.Vec32{X: rectColl.Size.X + param.SnakeWidth, Y: rectColl.Size.Y})
-	case DirectionLeft:
+	case events.DirectionLeft:
 		rectDraw = c.NewRect(c.Vec32{X: rectColl.Pos.X, Y: rectColl.Pos.Y}, c.Vec32{X: rectColl.Size.X + param.SnakeWidth, Y: rectColl.Size.Y})
-	case DirectionUp:
+	case events.DirectionUp:
 		rectDraw = c.NewRect(c.Vec32{X: rectColl.Pos.X, Y: rectColl.Pos.Y}, c.Vec32{X: rectColl.Size.X, Y: rectColl.Size.Y + param.SnakeWidth})
-	case DirectionDown:
+	case events.DirectionDown:
 		rectDraw = c.NewRect(c.Vec32{X: rectColl.Pos.X, Y: rectColl.Pos.Y - param.SnakeWidth}, c.Vec32{X: rectColl.Size.X, Y: rectColl.Size.Y + param.SnakeWidth})
 	default:
 		panic("Wrong unit direction!!")
@@ -127,13 +127,13 @@ func (u *Unit) createRectHead() *c.RectF32 {
 func (u *Unit) createRectTail(rectHead *c.RectF32) (rectTail *c.RectF32) {
 	size := c.Vec32{X: param.SnakeWidth, Y: param.SnakeWidth}
 	switch u.Direction {
-	case DirectionUp:
+	case events.DirectionUp:
 		rectTail = c.NewRect(c.Vec32{X: rectHead.Pos.X, Y: rectHead.Pos.Y + float32(u.length) - param.SnakeWidth}, size)
-	case DirectionDown:
+	case events.DirectionDown:
 		rectTail = c.NewRect(c.Vec32{X: rectHead.Pos.X, Y: rectHead.Pos.Y - float32(u.length) + param.SnakeWidth}, size)
-	case DirectionLeft:
+	case events.DirectionLeft:
 		rectTail = c.NewRect(c.Vec32{X: rectHead.Pos.X + float32(u.length) - param.SnakeWidth, Y: rectHead.Pos.Y}, size)
-	case DirectionRight:
+	case events.DirectionRight:
 		rectTail = c.NewRect(c.Vec32{X: rectHead.Pos.X - float32(u.length) + param.SnakeWidth, Y: rectHead.Pos.Y}, size)
 	}
 	return
@@ -142,7 +142,7 @@ func (u *Unit) createRectTail(rectHead *c.RectF32) (rectTail *c.RectF32) {
 func (u *Unit) createRectBody(rectColl *c.RectF32) (rectBody *c.RectF32) {
 
 	switch u.Direction {
-	case DirectionUp:
+	case events.DirectionUp:
 		rectBody = c.NewRect(
 			c.Vec32{X: rectColl.Pos.X, Y: rectColl.Pos.Y + param.RadiusSnake},
 			c.Vec32{X: rectColl.Size.X, Y: rectColl.Size.Y - param.SnakeWidth},
@@ -150,7 +150,7 @@ func (u *Unit) createRectBody(rectColl *c.RectF32) (rectBody *c.RectF32) {
 		if u.Next != nil {
 			rectBody.Size.Y += param.SnakeWidth
 		}
-	case DirectionDown:
+	case events.DirectionDown:
 		rectBody = c.NewRect(
 			c.Vec32{X: rectColl.Pos.X, Y: rectColl.Pos.Y + param.RadiusSnake},
 			c.Vec32{X: rectColl.Size.X, Y: rectColl.Size.Y - param.SnakeWidth},
@@ -159,7 +159,7 @@ func (u *Unit) createRectBody(rectColl *c.RectF32) (rectBody *c.RectF32) {
 			rectBody.Pos.Y -= param.SnakeWidth
 			rectBody.Size.Y += param.SnakeWidth
 		}
-	case DirectionLeft:
+	case events.DirectionLeft:
 		rectBody = c.NewRect(
 			c.Vec32{X: rectColl.Pos.X + param.RadiusSnake, Y: rectColl.Pos.Y},
 			c.Vec32{X: rectColl.Size.X - param.SnakeWidth, Y: rectColl.Size.Y},
@@ -167,7 +167,7 @@ func (u *Unit) createRectBody(rectColl *c.RectF32) (rectBody *c.RectF32) {
 		if u.Next != nil {
 			rectBody.Size.X += param.SnakeWidth
 		}
-	case DirectionRight:
+	case events.DirectionRight:
 		rectBody = c.NewRect(
 			c.Vec32{X: rectColl.Pos.X + param.RadiusSnake, Y: rectColl.Pos.Y},
 			c.Vec32{X: rectColl.Size.X - param.SnakeWidth, Y: rectColl.Size.Y},
@@ -247,13 +247,13 @@ func (u *Unit) markHeadCenters(dst *ebiten.Image) {
 
 	backCenter := u.HeadCenter
 	switch u.Direction {
-	case DirectionUp:
+	case events.DirectionUp:
 		backCenter.Y = u.HeadCenter.Y + u.length - offset
-	case DirectionDown:
+	case events.DirectionDown:
 		backCenter.Y = u.HeadCenter.Y - u.length + offset
-	case DirectionRight:
+	case events.DirectionRight:
 		backCenter.X = u.HeadCenter.X - u.length + offset
-	case DirectionLeft:
+	case events.DirectionLeft:
 		backCenter.X = u.HeadCenter.X + u.length - offset
 	}
 	// mark head center at the other side
