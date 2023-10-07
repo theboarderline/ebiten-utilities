@@ -47,14 +47,15 @@ var _ = Describe("Udp", func() {
 		err = gameserverClient.Register(playerTwoName)
 		Expect(err).NotTo(HaveOccurred())
 
-		players := gameserverClient.GetPlayers()
-		Expect(players).To(HaveLen(2))
+		Expect(gameserverClient.GetPlayerCount()).To(HaveLen(2))
 
 		err = gameserverClient.Deregister(playerOneName)
 		Expect(err).NotTo(HaveOccurred())
 
 		err = gameserverClient.Deregister(playerTwoName)
 		Expect(err).NotTo(HaveOccurred())
+
+		Expect(gameserverClient.GetPlayerCount()).To(HaveLen(0))
 	})
 
 	It("send and receive messages", func() {
@@ -63,7 +64,7 @@ var _ = Describe("Udp", func() {
 
 		response, err := gameserverClient.GetMessage()
 		Expect(err).NotTo(HaveOccurred())
-		Expect(response.Message).To(ContainSubstring("Acknowledged"))
+		Expect(response.Message).To(ContainSubstring("Welcome to Light Snake!"))
 	})
 
 })

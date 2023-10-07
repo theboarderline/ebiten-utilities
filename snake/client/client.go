@@ -5,6 +5,7 @@ import (
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -23,6 +24,29 @@ func NewGameserverClient(address string, port int) *GameserverClient {
 
 func (g *GameserverClient) IsConnected() bool {
 	return g.conn != nil
+}
+
+func (g *GameserverClient) GetPlayerCount() int {
+	event := events.Event{
+		Type: events.PLAYER_COUNT,
+	}
+
+	if err := g.SendMessage(event); err != nil {
+		return -1
+	}
+
+	response, err := g.GetMessage()
+	if err != nil {
+		return -1
+	}
+
+	count, err := strconv.Atoi(response.Message)
+	if err != nil {
+		log.Print(err)
+		return -1
+	}
+
+	return count
 }
 
 func (g *GameserverClient) GetPlayers() map[string]*snake.Snake {

@@ -86,8 +86,10 @@ func (s *Snake) HandleDirectionInput(direction DirectionT) {
 }
 
 func (s *Snake) CheckFoodCollision(distToFood float32) bool {
+
 	if distToFood <= param.RadiusEating {
 		s.Grow()
+		s.TriggerScoreAnim()
 		return true
 	}
 
