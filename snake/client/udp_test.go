@@ -63,7 +63,7 @@ var _ = Describe("Udp", func() {
 
 		response, err := gameserverClient.GetMessage()
 		Expect(err).NotTo(HaveOccurred())
-		Expect(response).To(ContainSubstring("Acknowledged"))
+		Expect(response.Message).To(ContainSubstring("Acknowledged"))
 	})
 
 })

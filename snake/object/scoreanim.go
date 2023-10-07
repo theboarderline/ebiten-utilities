@@ -26,7 +26,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	c "github.com/theboarderline/ebiten-utilities/snake/core"
-	s "github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"github.com/theboarderline/ebiten-utilities/snake/param"
 )
 
@@ -46,7 +45,7 @@ type ScoreAnim struct {
 	c.TeleCompTriang
 	pos       c.Vec32
 	alpha     uint8
-	direction s.DirectionT
+	direction DirectionT
 	drawOpts  ebiten.DrawTrianglesOptions
 }
 
@@ -73,7 +72,7 @@ func NewScoreAnim(pos c.Vec32) *ScoreAnim {
 			Y: pos.Y - scoreAnimShiftY,
 		},
 		alpha:     param.ColorScore.A,
-		direction: s.DirectionUp,
+		direction: DirectionUp,
 	}
 	newAnim.SetColor(&param.ColorScore)
 
@@ -95,7 +94,7 @@ func (s *ScoreAnim) createRects() {
 	s.TeleCompTriang.Update(&pureRect)
 }
 
-// Returns true when the animation is finished
+// Update Returns true when the animation is finished
 func (s *ScoreAnim) Update() bool {
 	// Move animation
 	s.pos.Y -= scoreAnimSpeed * param.DeltaTime
@@ -106,7 +105,7 @@ func (s *ScoreAnim) Update() bool {
 	}
 
 	s.alpha -= decrementAlpha
-	color := color.RGBA{param.ColorScore.R, param.ColorScore.G, param.ColorScore.B, s.alpha}
+	color := color.RGBA{R: param.ColorScore.R, G: param.ColorScore.G, B: param.ColorScore.B, A: s.alpha}
 	s.SetColor(&color)
 
 	// Update rectangles of this anim

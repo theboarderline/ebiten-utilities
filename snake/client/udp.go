@@ -32,12 +32,13 @@ func (g *GameserverClient) GetMessage() (event events.Event, err error) {
 	}
 
 	received := make([]byte, 1024)
-	if _, err = g.conn.Read(received); err != nil {
+	length, err := g.conn.Read(received)
+	if err != nil {
 		log.Debug().Err(err).Msg("Error reading from UDP address")
 		return events.Event{}, err
 	}
 
-	if err = json.Unmarshal(received, &event); err != nil {
+	if err = json.Unmarshal(received[:length], &event); err != nil {
 		log.Debug().Err(err).Msg("Error unmarshalling message")
 		return events.Event{}, err
 	}
