@@ -1,14 +1,6 @@
-**/*.sqlite3
-**/source.sh
 **/var/
-**/.terraform*
-**/build/
 **/secrets/
-**/cloud_sql_proxy
-**/service-accounts/
 **/.DS_Store
-
-envs/gcp.sh
 
 **/Chart.lock
 
