@@ -2,6 +2,7 @@ package snake
 
 import (
 	c "github.com/theboarderline/ebiten-utilities/snake/core"
+	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object"
 	"github.com/theboarderline/ebiten-utilities/snake/param"
 	"math"
@@ -50,11 +51,11 @@ func (s *Snake) CalcSnakeFoodDist(foodLoc c.Vec64) float32 {
 	return float32(minDist)
 }
 
-func (s *Snake) HandleDirectionInput(direction DirectionT) {
-	pressedLeft := direction == DirectionLeft
-	pressedRight := direction == DirectionRight
-	pressedUp := direction == DirectionUp
-	pressedDown := direction == DirectionDown
+func (s *Snake) HandleDirectionInput(direction events.DirectionT) {
+	pressedLeft := direction == events.DirectionLeft
+	pressedRight := direction == events.DirectionRight
+	pressedUp := direction == events.DirectionUp
+	pressedDown := direction == events.DirectionDown
 
 	if !pressedLeft && !pressedRight && !pressedUp && !pressedDown {
 		return
@@ -65,15 +66,15 @@ func (s *Snake) HandleDirectionInput(direction DirectionT) {
 
 	if dirCurrent.IsVertical() {
 		if pressedLeft {
-			dirNew = DirectionLeft
+			dirNew = events.DirectionLeft
 		} else if pressedRight {
-			dirNew = DirectionRight
+			dirNew = events.DirectionRight
 		}
 	} else {
 		if pressedUp {
-			dirNew = DirectionUp
+			dirNew = events.DirectionUp
 		} else if pressedDown {
-			dirNew = DirectionDown
+			dirNew = events.DirectionDown
 		}
 	}
 
@@ -100,13 +101,13 @@ func (s *Snake) TriggerScoreAnim() *object.ScoreAnim {
 	corrCenter := s.UnitHead.HeadCenter
 
 	switch s.UnitHead.Direction {
-	case DirectionUp:
+	case events.DirectionUp:
 		corrCenter.Y -= param.RadiusSnake
-	case DirectionDown:
+	case events.DirectionDown:
 		corrCenter.Y += param.RadiusSnake
-	case DirectionRight:
+	case events.DirectionRight:
 		corrCenter.X += param.RadiusSnake
-	case DirectionLeft:
+	case events.DirectionLeft:
 		corrCenter.X -= param.RadiusSnake
 	}
 

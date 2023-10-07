@@ -22,6 +22,7 @@ package snake
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"image/color"
 	"log"
 	"math"
@@ -68,13 +69,13 @@ type Snake struct {
 	drawOptsHead    ebiten.DrawTrianglesShaderOptions `json:"drawOptsHead"`
 }
 
-func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float64, direction DirectionT, color *color.RGBA) *Snake {
+func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float64, direction events.DirectionT, color *color.RGBA) *Snake {
 
 	if name == "" {
 		name = fmt.Sprintf("Snake %f-%f", headCenter.X, headCenter.Y)
 	}
 
-	if direction >= DirectionTotal {
+	if direction >= events.DirectionTotal {
 		panic("direction parameter is invalid.")
 	}
 	if headCenter.X > param.ScreenWidth {
@@ -122,7 +123,7 @@ func NewSnakeFromResponse(response string) (*Snake, error) {
 }
 
 func NewSnakeRandDir(name string, headCenter c.Vec64, initialLength uint16, speed float64, color *color.RGBA) *Snake {
-	direction := DirectionT(rand.Intn(int(DirectionTotal)))
+	direction := events.DirectionT(rand.Intn(int(events.DirectionTotal)))
 	return NewSnake(name, headCenter, initialLength, speed, direction, color)
 }
 
@@ -162,13 +163,13 @@ func (s *Snake) updateHead(dist float64, distToFood float32) {
 
 	// Move head
 	switch s.UnitHead.Direction {
-	case DirectionRight:
+	case events.DirectionRight:
 		s.UnitHead.moveRight(dist)
-	case DirectionLeft:
+	case events.DirectionLeft:
 		s.UnitHead.moveLeft(dist)
-	case DirectionUp:
+	case events.DirectionUp:
 		s.UnitHead.moveUp(dist)
-	case DirectionDown:
+	case events.DirectionDown:
 		s.UnitHead.moveDown(dist)
 	}
 
@@ -262,7 +263,7 @@ func (s *Snake) Grow() {
 	s.Speed = param.SnakeSpeedFinal + (param.SnakeSpeedInitial-param.SnakeSpeedFinal)/math.Exp(0.0075*float64(s.FoodEaten))
 }
 
-func (s *Snake) LastDirection() DirectionT {
+func (s *Snake) LastDirection() events.DirectionT {
 	// if the turn queue is not empty, return the direction of the last turn to be taken.
 	if queueLength := len(s.turnQueue); queueLength > 0 {
 		return s.turnQueue[queueLength-1].directionTo

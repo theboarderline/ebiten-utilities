@@ -19,34 +19,19 @@ along with snake-ebiten. If not, see <https://www.gnu.org/licenses/>.
 
 package snake
 
-type DirectionT uint8
-
-const (
-	DirectionUp DirectionT = iota
-	DirectionDown
-	DirectionLeft
-	DirectionRight
-	DirectionTotal
-)
-
-func (d DirectionT) IsVertical() bool {
-	if d >= DirectionTotal {
-		panic("wrong direction")
-	}
-	return (d == DirectionUp) || (d == DirectionDown)
-}
+import "github.com/theboarderline/ebiten-utilities/snake/events"
 
 type Turn struct {
-	directionTo   DirectionT `json:"directionTo"`
-	isTurningLeft bool       `json:"isTurningLeft"`
+	directionTo   events.DirectionT `json:"directionTo"`
+	isTurningLeft bool              `json:"isTurningLeft"`
 }
 
-func NewTurn(directionFrom, directionTo DirectionT) *Turn {
+func NewTurn(directionFrom, directionTo events.DirectionT) *Turn {
 	return &Turn{
 		directionTo: directionTo,
-		isTurningLeft: (directionFrom == DirectionUp && directionTo == DirectionLeft) ||
-			(directionFrom == DirectionLeft && directionTo == DirectionDown) ||
-			(directionFrom == DirectionDown && directionTo == DirectionRight) ||
-			(directionFrom == DirectionRight && directionTo == DirectionUp),
+		isTurningLeft: (directionFrom == events.DirectionUp && directionTo == events.DirectionLeft) ||
+			(directionFrom == events.DirectionLeft && directionTo == events.DirectionDown) ||
+			(directionFrom == events.DirectionDown && directionTo == events.DirectionRight) ||
+			(directionFrom == events.DirectionRight && directionTo == events.DirectionUp),
 	}
 }
