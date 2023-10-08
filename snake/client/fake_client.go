@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/go-faker/faker/v4"
+	"github.com/rs/zerolog/log"
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"github.com/theboarderline/ebiten-utilities/snake/param"
@@ -24,6 +25,14 @@ func NewFakeClient(name string) *FakeClient {
 	}
 }
 
+func (g *FakeClient) HandleIncomingEvents() {
+	log.Debug().Msg("HandleIncomingEvents")
+}
+
+func (g *FakeClient) HandleOutgoingEvents() {
+	log.Debug().Msg("HandleOutgoingEvents")
+}
+
 func (g *FakeClient) GetPlayers() map[string]*snake.Snake {
 	return g.Players
 }
@@ -32,22 +41,22 @@ func (g *FakeClient) IsConnected() bool {
 	return true
 }
 
-func (g *FakeClient) Register(name string) error {
-	return nil
-}
-
-func (g *FakeClient) Deregister(name string) error {
-	return nil
-}
-
-func (g *FakeClient) SendMessage(event events.Event) {
+func (g *FakeClient) Register(name string) {
 	return
 }
 
-func (g *FakeClient) GetMessage() events.Event {
+func (g *FakeClient) Deregister(name string) {
+	return
+}
+
+func (g *FakeClient) SendMessage(event *events.Event) {
+	return
+}
+
+func (g *FakeClient) GetMessage() *events.Event {
 
 	if rand.Float64() < 0.95 {
-		return events.Event{}
+		return nil
 	}
 
 	event := events.Event{
@@ -55,7 +64,7 @@ func (g *FakeClient) GetMessage() events.Event {
 		Type:           events.PLAYER_INPUT,
 		InputDirection: events.NewRandomDirection(),
 	}
-	return event
+	return &event
 }
 
 func (g *FakeClient) Cleanup() error {

@@ -102,7 +102,12 @@ func (g *GameserverClient) GetPlayers() map[string]*snake.Snake {
 
 	g.SendMessage(&event)
 
-	return nil
+	res := g.GetMessage()
+	if res == nil {
+		return nil
+	}
+
+	return makeSnakes(res.Message)
 }
 
 func makeSnakes(response string) map[string]*snake.Snake {
@@ -125,7 +130,7 @@ func parseSnakeResponse(response string) []*snake.Snake {
 
 		s, err := snake.NewSnakeFromResponse(item)
 		if err != nil {
-			log.Print(err)
+			log.Error().Err(err).Msg("Error parsing snake response")
 		}
 
 		snakes = append(snakes, s)

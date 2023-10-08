@@ -6,10 +6,12 @@ import (
 )
 
 type Client interface {
+	HandleIncomingEvents()
+	HandleOutgoingEvents()
 	IsConnected() bool
 	GetPlayers() map[string]*snake.Snake
-	Register(name string) error
-	Deregister(name string) error
+	Register(name string)
+	Deregister(name string)
 	SendMessage(event *events.Event)
 	GetMessage() *events.Event
 	Cleanup() error
