@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/json"
 	"github.com/rs/zerolog/log"
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 )
@@ -9,6 +8,10 @@ import (
 func (g *GameserverClient) HandleIncomingEvents() {
 	buffer := make([]byte, 1024)
 	for {
+		if g.conn == nil {
+			return
+		}
+
 		length, addr, err := g.conn.ReadFrom(buffer)
 		if err != nil {
 			log.Print(err)
@@ -19,11 +22,7 @@ func (g *GameserverClient) HandleIncomingEvents() {
 			continue
 		}
 
-		var event events.Event
-		if err = json.Unmarshal(buffer[:length], event); err != nil {
-			log.Print(err)
-			continue
-		}
+		event := events.Parse(string(buffer[:length]))
 
 		g.IncomingMessages <- event
 
@@ -32,8 +31,11 @@ func (g *GameserverClient) HandleIncomingEvents() {
 }
 
 func (g *GameserverClient) HandleOutgoingEvents() {
-
 	for event := range g.OutgoingMessages {
+		if g.conn == nil {
+			return
+		}
+
 		if _, err := g.conn.Write([]byte(event.String())); err != nil {
 			log.Error().Err(err).Msg("Error sending UDP message")
 			continue

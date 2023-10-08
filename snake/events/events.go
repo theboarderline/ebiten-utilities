@@ -33,10 +33,14 @@ func Parse(input string) (event Event) {
 
 	if len(parts) > 0 {
 		event.Type = parts[0]
+	} else {
+		event.Type = ACK
 	}
 
 	if len(parts) > 1 {
 		event.PlayerName = parts[1]
+	} else {
+		event.PlayerName = "N/A"
 	}
 
 	if len(parts) > 2 {
