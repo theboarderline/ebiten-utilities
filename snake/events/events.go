@@ -21,6 +21,10 @@ func (e Event) String() (event string) {
 		event = fmt.Sprintf("%s %s", event, e.PlayerName)
 	}
 
+	if e.InputDirection.IsValid() {
+		event = fmt.Sprintf("%s %d", event, e.InputDirection)
+	}
+
 	if e.Message != "" {
 		event = fmt.Sprintf("%s %s", event, e.Message)
 	}
