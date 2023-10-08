@@ -1,6 +1,11 @@
 package events
 
-import "math/rand"
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/rs/zerolog/log"
+	"strings"
+)
 
 type Event struct {
 	PlayerName     string     `json:"playerName,omitempty"`
@@ -9,17 +14,32 @@ type Event struct {
 	InputDirection DirectionT `json:"direction,omitempty"`
 }
 
-func NewRandomDirection() (direction DirectionT) {
+func (e Event) String() (event string) {
+	event = e.Type
 
-	if rand.Float64() < 0.25 {
-		direction = DirectionUp
-	} else if rand.Float64() < 0.5 {
-		direction = DirectionDown
-	} else if rand.Float64() < 0.75 {
-		direction = DirectionLeft
-	} else {
-		direction = DirectionRight
+	if e.PlayerName != "" {
+		event = fmt.Sprintf("%s %s", event, e.PlayerName)
 	}
 
-	return direction
+	if e.Message != "" {
+		event = fmt.Sprintf("%s %s", event, e.Message)
+	}
+
+	return event
+}
+
+func (e Event) Marshal() (event string) {
+	eventBytes, err := json.Marshal(e)
+	if err != nil {
+		log.Error().Err(err).Msg("Error marshaling event")
+		return ""
+	}
+
+	if string(eventBytes) == "null" {
+		return ""
+	}
+
+	event = strings.ReplaceAll(string(eventBytes), "\\", "")
+
+	return event
 }

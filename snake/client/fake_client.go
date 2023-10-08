@@ -28,10 +28,6 @@ func (g *FakeClient) GetPlayers() map[string]*snake.Snake {
 	return g.Players
 }
 
-func (g *FakeClient) Connect() error {
-	return nil
-}
-
 func (g *FakeClient) IsConnected() bool {
 	return true
 }
@@ -44,22 +40,22 @@ func (g *FakeClient) Deregister(name string) error {
 	return nil
 }
 
-func (g *FakeClient) SendMessage(event events.Event) error {
-	return nil
+func (g *FakeClient) SendMessage(event events.Event) {
+	return
 }
 
-func (g *FakeClient) GetMessage() (events.Event, error) {
+func (g *FakeClient) GetMessage() events.Event {
 
 	if rand.Float64() < 0.95 {
-		return events.Event{}, nil
+		return events.Event{}
 	}
 
 	event := events.Event{
-		PlayerName:     "enemy",
+		PlayerName:     events.ENEMY,
 		Type:           events.PLAYER_INPUT,
 		InputDirection: events.NewRandomDirection(),
 	}
-	return event, nil
+	return event
 }
 
 func (g *FakeClient) Cleanup() error {

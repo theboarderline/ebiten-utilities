@@ -24,4 +24,7 @@ const (
 
 	// PLAYER_CAPACITY counts the number of players in the game
 	PLAYER_CAPACITY = "PLAYER_CAPACITY"
+
+	// DEFAULT_ENEMY_NAME
+	ENEMY = "Enemy"
 )

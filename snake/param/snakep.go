@@ -2,8 +2,9 @@ package param
 
 // Snake parameters
 const (
-	GameserverAddress      = "127.0.0.1"
+	Localhost              = "127.0.0.1"
 	GameserverPort         = 7777
+	ClientPort             = 8080
 	SnakeSpeedInitial      = 275
 	SnakeSpeedFinal        = 250
 	SnakeLength            = 240

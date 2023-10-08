@@ -4,26 +4,75 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
+	"github.com/theboarderline/ebiten-utilities/snake/param"
 	"net"
 	"strconv"
 	"strings"
 )
 
 type GameserverClient struct {
-	conn    *net.UDPConn
-	address string
-	port    int
+	conn             NetConn
+	addr             net.UDPAddr
+	IncomingMessages chan events.Event
+	OutgoingMessages chan events.Event
 }
 
-func NewGameserverClient(address string, port int) *GameserverClient {
-	return &GameserverClient{
-		address: address,
-		port:    port,
+func NewUDPConn(addr net.UDPAddr) *net.UDPConn {
+	if addr.IP == nil {
+		addr.IP = net.ParseIP(param.Localhost)
+		log.Info().Msgf("Using local address: %s", addr.IP)
+		return nil
 	}
+
+	if addr.Port == 0 {
+		addr.Port = param.GameserverPort
+		log.Info().Msgf("Using default port: %d", addr.Port)
+		return nil
+	}
+
+	conn, err := net.DialUDP("udp", nil, &addr)
+	if err != nil {
+		log.Error().Err(err).Msg("Error connecting to UDP")
+		return nil
+	}
+
+	return conn
 }
 
-func (g *GameserverClient) IsConnected() bool {
-	return g.conn != nil
+func NewGameserverClient(addr *net.UDPAddr, gameserverConn NetConn, incomingMessages chan events.Event, outgoingMessages chan events.Event) *GameserverClient {
+	if addr == nil {
+		addr = &net.UDPAddr{
+			IP:   net.ParseIP(param.Localhost),
+			Port: param.ClientPort,
+		}
+		log.Info().Msgf("Using local address: %s", addr.IP)
+	} else {
+		if addr.IP == nil {
+			addr.IP = net.ParseIP(param.Localhost)
+			log.Info().Msgf("Using local address: %s", addr.IP)
+			return nil
+		}
+
+		if addr.Port == 0 {
+			addr.Port = param.ClientPort
+			log.Info().Msgf("Using default port: %d", addr.Port)
+			return nil
+		}
+	}
+
+	if gameserverConn == nil {
+		gameserverConn = NewUDPConn(net.UDPAddr{
+			IP:   net.ParseIP(param.Localhost),
+			Port: param.GameserverPort,
+		})
+	}
+
+	return &GameserverClient{
+		addr:             *addr,
+		conn:             gameserverConn,
+		IncomingMessages: incomingMessages,
+		OutgoingMessages: outgoingMessages,
+	}
 }
 
 func (g *GameserverClient) GetPlayerCount() int {
@@ -31,18 +80,15 @@ func (g *GameserverClient) GetPlayerCount() int {
 		Type: events.PLAYER_COUNT,
 	}
 
-	if err := g.SendMessage(event); err != nil {
+	g.SendMessage(&event)
+
+	res := g.GetMessage()
+	if res == nil {
 		return -1
 	}
 
-	response, err := g.GetMessage()
+	count, err := strconv.Atoi(res.Message)
 	if err != nil {
-		return -1
-	}
-
-	count, err := strconv.Atoi(response.Message)
-	if err != nil {
-		log.Print(err)
 		return -1
 	}
 
@@ -54,16 +100,9 @@ func (g *GameserverClient) GetPlayers() map[string]*snake.Snake {
 		Type: events.GET_PLAYERS,
 	}
 
-	if err := g.SendMessage(event); err != nil {
-		return nil
-	}
+	g.SendMessage(&event)
 
-	response, err := g.GetMessage()
-	if err != nil {
-		return nil
-	}
-
-	return makeSnakes(response.Message)
+	return nil
 }
 
 func makeSnakes(response string) map[string]*snake.Snake {

@@ -1,5 +1,7 @@
 package events
 
+import "math/rand"
+
 type DirectionT uint8
 
 const (
@@ -8,6 +10,21 @@ const (
 	DirectionLeft             = 'l'
 	DirectionRight            = 'r'
 )
+
+func NewRandomDirection() (direction DirectionT) {
+
+	if rand.Float64() < 0.25 {
+		direction = DirectionUp
+	} else if rand.Float64() < 0.5 {
+		direction = DirectionDown
+	} else if rand.Float64() < 0.75 {
+		direction = DirectionLeft
+	} else {
+		direction = DirectionRight
+	}
+
+	return direction
+}
 
 func (d DirectionT) IsVertical() bool {
 	return d == DirectionUp || d == DirectionDown

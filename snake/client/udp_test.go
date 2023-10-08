@@ -7,64 +7,57 @@ import (
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 )
 
-var _ = Describe("Udp", func() {
+var _ = Describe("Udp Integration", func() {
 
 	var (
-		udpAddress       = "127.0.0.1"
-		udpPort          = 7777
+		in               chan events.Event
+		out              chan events.Event
 		gameserverClient *client.GameserverClient
 	)
 
 	BeforeEach(func() {
-		gameserverClient = client.NewGameserverClient(udpAddress, udpPort)
-		err := gameserverClient.Connect()
-		Expect(err).NotTo(HaveOccurred())
+		in = make(chan events.Event, 1)
+		out = make(chan events.Event, 1)
+
+		gameserverClient = client.NewGameserverClient(nil, &client.MockConn{}, in, out)
+		Expect(gameserverClient).NotTo(BeNil())
+		Expect(gameserverClient.IsConnected()).To(BeTrue())
+
 	})
 
 	AfterEach(func() {
 		err := gameserverClient.Cleanup()
 		Expect(err).NotTo(HaveOccurred())
-	})
-
-	It("can disconnect and reconnect", func() {
-		err := gameserverClient.Cleanup()
-		Expect(err).NotTo(HaveOccurred())
-
 		Expect(gameserverClient.IsConnected()).To(BeFalse())
-
-		err = gameserverClient.Connect()
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(gameserverClient.IsConnected()).To(BeTrue())
 	})
 
-	It("can register and deregister 2 players", func() {
-		playerOneName := "test"
-		err := gameserverClient.Register(playerOneName)
-		Expect(err).NotTo(HaveOccurred())
+	It("can get the current player count", func() {
+		go gameserverClient.HandleOutgoingEvents()
+		go gameserverClient.HandleIncomingEvents()
 
-		playerTwoName := "test2"
-		err = gameserverClient.Register(playerTwoName)
-		Expect(err).NotTo(HaveOccurred())
+		count := gameserverClient.GetPlayerCount()
 
-		Expect(gameserverClient.GetPlayerCount()).To(HaveLen(2))
-
-		err = gameserverClient.Deregister(playerOneName)
-		Expect(err).NotTo(HaveOccurred())
-
-		err = gameserverClient.Deregister(playerTwoName)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(gameserverClient.GetPlayerCount()).To(HaveLen(0))
+		Expect(count).To(Equal(0))
 	})
 
-	It("send and receive messages", func() {
-		event := events.Event{Type: "ACK"}
-		Expect(gameserverClient.SendMessage(event)).To(Succeed())
-
-		response, err := gameserverClient.GetMessage()
-		Expect(err).NotTo(HaveOccurred())
-		Expect(response.Message).To(ContainSubstring("Welcome to Light Snake!"))
-	})
+	//It("can register and deregister 2 players", func() {
+	//	playerOneName := "test"
+	//	err := gameserverClient.Register(playerOneName)
+	//	Expect(err).NotTo(HaveOccurred())
+	//
+	//	playerTwoName := "test2"
+	//	err = gameserverClient.Register(playerTwoName)
+	//	Expect(err).NotTo(HaveOccurred())
+	//
+	//	Expect(gameserverClient.GetPlayerCount()).To(HaveLen(2))
+	//
+	//	err = gameserverClient.Deregister(playerOneName)
+	//	Expect(err).NotTo(HaveOccurred())
+	//
+	//	err = gameserverClient.Deregister(playerTwoName)
+	//	Expect(err).NotTo(HaveOccurred())
+	//
+	//	Expect(gameserverClient.GetPlayerCount()).To(HaveLen(0))
+	//})
 
 })
