@@ -28,6 +28,24 @@ func (e Event) String() (event string) {
 	return event
 }
 
+func Parse(input string) (event Event) {
+	parts := strings.Split(input, " ")
+
+	if len(parts) > 0 {
+		event.Type = parts[0]
+	}
+
+	if len(parts) > 1 {
+		event.PlayerName = parts[1]
+	}
+
+	if len(parts) > 2 {
+		event.Message = parts[2]
+	}
+
+	return event
+}
+
 func (e Event) Marshal() (event string) {
 	eventBytes, err := json.Marshal(e)
 	if err != nil {
