@@ -23,6 +23,9 @@ var _ = Describe("Udp Integration", func() {
 		Expect(gameserverClient).NotTo(BeNil())
 		Expect(gameserverClient.IsConnected()).To(BeTrue())
 
+		defer gameserverClient.Cleanup()
+		go gameserverClient.HandleOutgoingEvents()
+		go gameserverClient.HandleIncomingEvents()
 	})
 
 	AfterEach(func() {
@@ -32,17 +35,15 @@ var _ = Describe("Udp Integration", func() {
 	})
 
 	It("can get the current player count", func() {
-		defer gameserverClient.Cleanup()
-		go gameserverClient.HandleOutgoingEvents()
-		go gameserverClient.HandleIncomingEvents()
-
 		count := gameserverClient.GetPlayerCount()
 		Expect(count).To(Equal(0))
+	})
 
+	It("can register a player", func() {
 		playerOneName := "test"
 		gameserverClient.Register(playerOneName)
 
-		count = gameserverClient.GetPlayerCount()
+		count := gameserverClient.GetPlayerCount()
 		Expect(count).To(Equal(1))
 
 		gameserverClient.Deregister(playerOneName)

@@ -24,14 +24,14 @@ func (g *GameserverClient) HandleIncomingEvents() {
 
 		event := events.Parse(string(buffer[:length]))
 
-		g.IncomingMessages <- event
+		g.incomingMessages <- event
 
 		log.Info().Msgf("Received UDP message from %s: %s", addr, string(buffer[:length]))
 	}
 }
 
 func (g *GameserverClient) HandleOutgoingEvents() {
-	for event := range g.OutgoingMessages {
+	for event := range g.outgoingMessages {
 		if g.conn == nil {
 			return
 		}

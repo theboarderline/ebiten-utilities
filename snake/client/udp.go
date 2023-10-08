@@ -9,13 +9,13 @@ func (g *GameserverClient) SendMessage(event *events.Event) {
 		return
 	}
 
-	g.OutgoingMessages <- *event
+	g.outgoingMessages <- *event
 
 	return
 }
 
 func (g *GameserverClient) GetMessage() *events.Event {
-	event := <-g.IncomingMessages
+	event := <-g.incomingMessages
 
 	return &event
 }

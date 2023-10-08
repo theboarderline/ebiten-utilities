@@ -42,10 +42,12 @@ func (g *FakeClient) IsConnected() bool {
 }
 
 func (g *FakeClient) Register(name string) {
+	g.Players[name] = snake.NewSnakeRandDirLoc(name, param.SnakeLength, param.SnakeSpeedInitial, &param.ColorSnake2)
 	return
 }
 
 func (g *FakeClient) Deregister(name string) {
+	delete(g.Players, name)
 	return
 }
 

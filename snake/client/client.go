@@ -13,8 +13,8 @@ import (
 type GameserverClient struct {
 	conn             NetConn
 	addr             net.UDPAddr
-	IncomingMessages chan events.Event
-	OutgoingMessages chan events.Event
+	incomingMessages chan events.Event
+	outgoingMessages chan events.Event
 }
 
 func NewUDPConn(addr net.UDPAddr) *net.UDPConn {
@@ -70,8 +70,8 @@ func NewGameserverClient(addr *net.UDPAddr, gameserverConn NetConn, incomingMess
 	return &GameserverClient{
 		addr:             *addr,
 		conn:             gameserverConn,
-		IncomingMessages: incomingMessages,
-		OutgoingMessages: outgoingMessages,
+		incomingMessages: incomingMessages,
+		outgoingMessages: outgoingMessages,
 	}
 }
 
