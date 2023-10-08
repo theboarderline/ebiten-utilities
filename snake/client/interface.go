@@ -6,7 +6,6 @@ import (
 )
 
 type Client interface {
-	Connect() error
 	IsConnected() bool
 	GetPlayers() map[string]*snake.Snake
 	Register(name string) error
