@@ -37,28 +37,18 @@ var _ = Describe("Udp Integration", func() {
 		go gameserverClient.HandleIncomingEvents()
 
 		count := gameserverClient.GetPlayerCount()
+		Expect(count).To(Equal(0))
 
+		playerOneName := "test"
+		gameserverClient.Register(playerOneName)
+
+		count = gameserverClient.GetPlayerCount()
+		Expect(count).To(Equal(1))
+
+		gameserverClient.Deregister(playerOneName)
+
+		count = gameserverClient.GetPlayerCount()
 		Expect(count).To(Equal(0))
 	})
-
-	//It("can register and deregister 2 players", func() {
-	//	playerOneName := "test"
-	//	err := gameserverClient.Register(playerOneName)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	playerTwoName := "test2"
-	//	err = gameserverClient.Register(playerTwoName)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	Expect(gameserverClient.GetPlayerCount()).To(HaveLen(2))
-	//
-	//	err = gameserverClient.Deregister(playerOneName)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	err = gameserverClient.Deregister(playerTwoName)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	Expect(gameserverClient.GetPlayerCount()).To(HaveLen(0))
-	//})
 
 })
