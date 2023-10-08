@@ -48,7 +48,12 @@ func Parse(input string) (event Event) {
 	}
 
 	if len(parts) > 2 {
-		event.Message = parts[2]
+		if event.Type == PLAYER_INPUT {
+			event.InputDirection = NewDirection(parts[2])
+		} else {
+
+			event.Message = parts[2]
+		}
 	}
 
 	return event

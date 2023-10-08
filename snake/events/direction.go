@@ -1,6 +1,10 @@
 package events
 
-import "math/rand"
+import (
+	"github.com/rs/zerolog/log"
+	"math/rand"
+	"strconv"
+)
 
 type DirectionT uint8
 
@@ -10,6 +14,15 @@ const (
 	DirectionLeft             = 'l'
 	DirectionRight            = 'r'
 )
+
+func NewDirection(input string) (direction DirectionT) {
+	d, err := strconv.Atoi(input)
+	if err != nil {
+		log.Err(err).Msg("Error parsing direction")
+	}
+
+	return DirectionT(d)
+}
 
 func NewRandomDirection() (direction DirectionT) {
 
