@@ -9,7 +9,7 @@ type Client interface {
 	HandleIncomingEvents()
 	HandleOutgoingEvents()
 	IsConnected() bool
-	GetPlayers() map[string]*snake.Snake
+	GetPlayers(senderName string) map[string]*snake.Snake
 	Register(name string)
 	Deregister(name string)
 	SendMessage(event *events.Event)

@@ -33,7 +33,7 @@ func (g *FakeClient) HandleOutgoingEvents() {
 	log.Debug().Msg("HandleOutgoingEvents")
 }
 
-func (g *FakeClient) GetPlayers() map[string]*snake.Snake {
+func (g *FakeClient) GetPlayers(senderName string) map[string]*snake.Snake {
 	return g.Players
 }
 

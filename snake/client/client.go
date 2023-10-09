@@ -97,9 +97,10 @@ func (g *GameserverClient) GetPlayerCount() int {
 	return count
 }
 
-func (g *GameserverClient) GetPlayers() map[string]*snake.Snake {
+func (g *GameserverClient) GetPlayers(senderName string) map[string]*snake.Snake {
 	event := events.Event{
-		Type: events.GET_PLAYERS,
+		Type:       events.GET_PLAYERS,
+		PlayerName: senderName,
 	}
 
 	g.SendMessage(&event)
@@ -130,7 +131,7 @@ func parseSnakeResponse(response string) []*snake.Snake {
 			continue
 		}
 
-		s, err := snake.NewSnakeFromResponse(item)
+		s, err := snake.UnmarshalJSON([]byte(item))
 		if err != nil {
 			log.Error().Err(err).Msg("Error parsing snake response")
 		}
