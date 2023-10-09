@@ -33,8 +33,8 @@ func (g *FakeClient) HandleOutgoingEvents() {
 	log.Debug().Msg("HandleOutgoingEvents")
 }
 
-func (g *FakeClient) GetPlayers(senderName string) map[string]*snake.Snake {
-	return g.Players
+func (g *FakeClient) GetPlayers(senderName string) {
+	return
 }
 
 func (g *FakeClient) IsConnected() bool {
