@@ -282,6 +282,10 @@ func (s *Snake) LastDirection() events.DirectionT {
 }
 
 func (s *Snake) Draw(dst *ebiten.Image) {
+	if s.Dead {
+		return
+	}
+
 	for unit := s.UnitHead; unit != nil; unit = unit.Next {
 		// Draw circle centered on unit's head center
 		vertices, indices := unit.CompTriangHead.Triangles()
