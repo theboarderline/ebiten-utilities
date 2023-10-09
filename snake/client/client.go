@@ -18,7 +18,7 @@ type GameserverClient struct {
 	outgoingMessages chan events.Event
 }
 
-func NewUDPConn(addr net.UDPAddr) *net.UDPConn {
+func NewGameserverConn(addr net.UDPAddr) *net.UDPConn {
 	if addr.IP == nil {
 		addr.IP = net.ParseIP(param.Localhost)
 		log.Info().Msgf("Using local address: %s", addr.IP)
@@ -40,37 +40,41 @@ func NewUDPConn(addr net.UDPAddr) *net.UDPConn {
 	return conn
 }
 
-func NewGameserverClient(bufferSize int, addr *net.UDPAddr, gameserverConn NetConn, incomingMessages chan events.Event, outgoingMessages chan events.Event) *GameserverClient {
+func NewGameserverClient(bufferSize int, clientAddr *net.UDPAddr, gameserverConn NetConn, incomingMessages chan events.Event, outgoingMessages chan events.Event) *GameserverClient {
 	if bufferSize == 0 {
 		bufferSize = param.BufferSize
 	}
 
-	if addr == nil {
-		addr = &net.UDPAddr{
+	if clientAddr == nil {
+		clientAddr = &net.UDPAddr{
 			IP:   net.ParseIP(param.Localhost),
 			Port: param.ClientPort,
 		}
-		log.Info().Msgf("Using local address: %s", addr.IP)
+		log.Info().Msgf("Using local address: %s", clientAddr.IP)
 	} else {
-		if addr.IP == nil {
-			addr.IP = net.ParseIP(param.Localhost)
-			log.Info().Msgf("Using local address: %s", addr.IP)
+		if clientAddr.IP == nil {
+			clientAddr.IP = net.ParseIP(param.Localhost)
+			log.Info().Msgf("Using local address: %s", clientAddr.IP)
 			return nil
 		}
 
-		if addr.Port == 0 {
-			addr.Port = param.ClientPort
-			log.Info().Msgf("Using default port: %d", addr.Port)
+		if clientAddr.Port == 0 {
+			clientAddr.Port = param.ClientPort
+			log.Info().Msgf("Using default port: %d", clientAddr.Port)
 			return nil
 		}
 	}
 
 	if gameserverConn == nil {
-		gameserverConn = NewUDPConn(*addr)
+		gameserverConn = NewGameserverConn(net.UDPAddr{
+			IP:   net.ParseIP(param.Localhost),
+			Port: param.GameserverPort,
+		})
 	}
 
 	return &GameserverClient{
-		addr:             *addr,
+		bufferSize:       bufferSize,
+		addr:             *clientAddr,
 		conn:             gameserverConn,
 		incomingMessages: incomingMessages,
 		outgoingMessages: outgoingMessages,

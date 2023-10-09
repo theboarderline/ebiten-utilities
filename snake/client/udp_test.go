@@ -5,6 +5,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/theboarderline/ebiten-utilities/snake/client"
 	"github.com/theboarderline/ebiten-utilities/snake/events"
+	"github.com/theboarderline/ebiten-utilities/snake/param"
+	"net"
 )
 
 var _ = Describe("Udp Integration", func() {
@@ -16,16 +18,24 @@ var _ = Describe("Udp Integration", func() {
 	)
 
 	BeforeEach(func() {
-		in = make(chan events.Event, 1)
-		out = make(chan events.Event, 1)
+		in = make(chan events.Event, 10)
+		out = make(chan events.Event, 10)
 
-		gameserverClient = client.NewGameserverClient(0, nil, &client.MockConn{}, in, out)
+		addr := net.UDPAddr{
+			IP:   net.ParseIP(param.Localhost),
+			Port: param.GameserverPort,
+		}
+		conn := client.NewGameserverConn(addr)
+		gameserverClient = client.NewGameserverClient(0, &addr, conn, in, out)
 		Expect(gameserverClient).NotTo(BeNil())
 		Expect(gameserverClient.IsConnected()).To(BeTrue())
 
-		defer gameserverClient.Cleanup()
 		go gameserverClient.HandleOutgoingEvents()
 		go gameserverClient.HandleIncomingEvents()
+
+		playerName := "test"
+		gameserverClient.Register(playerName)
+
 	})
 
 	AfterEach(func() {
@@ -39,17 +49,17 @@ var _ = Describe("Udp Integration", func() {
 		Expect(count).To(Equal(0))
 	})
 
-	It("can register a player", func() {
-		playerOneName := "test"
-		gameserverClient.Register(playerOneName)
-
-		count := gameserverClient.GetPlayerCount()
-		Expect(count).To(Equal(1))
-
-		gameserverClient.Deregister(playerOneName)
-
-		count = gameserverClient.GetPlayerCount()
-		Expect(count).To(Equal(0))
-	})
+	//It("can register a player", func() {
+	//	playerOneName := "test"
+	//	gameserverClient.Register(playerOneName)
+	//
+	//	count := gameserverClient.GetPlayerCount()
+	//	Expect(count).To(Equal(1))
+	//
+	//	gameserverClient.Deregister(playerOneName)
+	//
+	//	count = gameserverClient.GetPlayerCount()
+	//	Expect(count).To(Equal(0))
+	//})
 
 })

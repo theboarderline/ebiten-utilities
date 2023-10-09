@@ -16,8 +16,8 @@ var _ = Describe("Events", func() {
 	)
 
 	BeforeEach(func() {
-		in = make(chan events.Event, 1)
-		out = make(chan events.Event, 1)
+		in = make(chan events.Event, 10)
+		out = make(chan events.Event, 10)
 
 		gameserverClient = client.NewGameserverClient(0, nil, &client.MockConn{}, in, out)
 		Expect(gameserverClient).NotTo(BeNil())
