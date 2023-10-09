@@ -148,6 +148,10 @@ func NewRandSnake(name string) *Snake {
 }
 
 func (s *Snake) Update(distToFood float32) {
+	if !s.Alive {
+		return
+	}
+
 	moveDistance := s.Speed * param.DeltaTime
 
 	// if the snake has moved a safe distance after the last turn, take the next turn in the queue.
