@@ -57,7 +57,7 @@ func (g *FakeClient) SendMessage(event *events.Event) {
 
 func (g *FakeClient) GetMessage() *events.Event {
 
-	if rand.Float64() < 0.95 {
+	if rand.Float64() < 0.99999 {
 		return nil
 	}
 
