@@ -6,7 +6,7 @@ import (
 )
 
 func (g *GameserverClient) HandleIncomingEvents() {
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 2048)
 	for {
 		if g.conn == nil {
 			return
