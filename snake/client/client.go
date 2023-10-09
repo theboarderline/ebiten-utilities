@@ -1,13 +1,12 @@
 package client
 
 import (
+	"encoding/json"
 	"github.com/rs/zerolog/log"
 	"github.com/theboarderline/ebiten-utilities/snake/events"
 	"github.com/theboarderline/ebiten-utilities/snake/object/snake"
 	"github.com/theboarderline/ebiten-utilities/snake/param"
 	"net"
-	"strconv"
-	"strings"
 )
 
 type GameserverClient struct {
@@ -81,40 +80,23 @@ func NewGameserverClient(bufferSize int, clientAddr *net.UDPAddr, gameserverConn
 	}
 }
 
-func (g *GameserverClient) GetPlayerCount() int {
+func (g *GameserverClient) GetPlayerCount() {
 	event := events.Event{
 		Type: events.PLAYER_COUNT,
 	}
 
 	g.SendMessage(&event)
 
-	res := g.GetMessage()
-	if res == nil {
-		return -1
-	}
-
-	count, err := strconv.Atoi(res.Message)
-	if err != nil {
-		return -1
-	}
-
-	return count
+	return
 }
 
-func (g *GameserverClient) GetPlayers(senderName string) map[string]*snake.Snake {
+func (g *GameserverClient) GetPlayers(senderName string) {
 	event := events.Event{
 		Type:       events.GET_PLAYERS,
 		PlayerName: senderName,
 	}
 
 	g.SendMessage(&event)
-
-	res := g.GetMessage()
-	if res == nil {
-		return nil
-	}
-
-	return makeSnakes(res.Message)
 }
 
 func makeSnakes(response string) map[string]*snake.Snake {
@@ -130,17 +112,9 @@ func makeSnakes(response string) map[string]*snake.Snake {
 func parseSnakeResponse(response string) []*snake.Snake {
 	snakes := make([]*snake.Snake, 0)
 
-	for _, item := range strings.Split(response, "\n") {
-		if item == "" {
-			continue
-		}
-
-		s, err := snake.UnmarshalJSON([]byte(item))
-		if err != nil {
-			log.Error().Err(err).Msg("Error parsing snake response")
-		}
-
-		snakes = append(snakes, s)
+	if err := json.Unmarshal([]byte(response), &snakes); err != nil {
+		log.Error().Err(err).Msg("Error parsing snake response")
+		return nil
 	}
 
 	return nil

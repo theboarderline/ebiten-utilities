@@ -1,6 +1,7 @@
 package client_test
 
 import (
+	"github.com/go-faker/faker/v4"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/theboarderline/ebiten-utilities/snake/client"
@@ -15,6 +16,8 @@ var _ = Describe("Udp Integration", func() {
 		in               chan events.Event
 		out              chan events.Event
 		gameserverClient *client.GameserverClient
+		playerOneName    string
+		playerTwoName    string
 	)
 
 	BeforeEach(func() {
@@ -33,33 +36,30 @@ var _ = Describe("Udp Integration", func() {
 		go gameserverClient.HandleOutgoingEvents()
 		go gameserverClient.HandleIncomingEvents()
 
-		playerName := "test"
-		gameserverClient.Register(playerName)
+		playerOneName = faker.FirstName()
+		gameserverClient.Register(playerOneName)
+
+		playerTwoName = faker.FirstName()
+		gameserverClient.Register(playerTwoName)
 
 	})
 
 	AfterEach(func() {
+		gameserverClient.Deregister(playerOneName)
+		gameserverClient.Deregister(playerTwoName)
+
 		err := gameserverClient.Cleanup()
+
 		Expect(err).NotTo(HaveOccurred())
 		Expect(gameserverClient.IsConnected()).To(BeFalse())
 	})
 
-	It("can get the current player count", func() {
-		count := gameserverClient.GetPlayerCount()
-		Expect(count).To(Equal(0))
+	It("can get the list of players", func() {
+		gameserverClient.GetPlayers(playerOneName)
 	})
 
-	//It("can register a player", func() {
-	//	playerOneName := "test"
-	//	gameserverClient.Register(playerOneName)
-	//
-	//	count := gameserverClient.GetPlayerCount()
-	//	Expect(count).To(Equal(1))
-	//
-	//	gameserverClient.Deregister(playerOneName)
-	//
-	//	count = gameserverClient.GetPlayerCount()
-	//	Expect(count).To(Equal(0))
-	//})
+	It("can get the list of players", func() {
+		gameserverClient.GetPlayerCount()
+	})
 
 })
