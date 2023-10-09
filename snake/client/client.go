@@ -11,6 +11,7 @@ import (
 )
 
 type GameserverClient struct {
+	bufferSize       int
 	conn             NetConn
 	addr             net.UDPAddr
 	incomingMessages chan events.Event
@@ -39,7 +40,11 @@ func NewUDPConn(addr net.UDPAddr) *net.UDPConn {
 	return conn
 }
 
-func NewGameserverClient(addr *net.UDPAddr, gameserverConn NetConn, incomingMessages chan events.Event, outgoingMessages chan events.Event) *GameserverClient {
+func NewGameserverClient(bufferSize int, addr *net.UDPAddr, gameserverConn NetConn, incomingMessages chan events.Event, outgoingMessages chan events.Event) *GameserverClient {
+	if bufferSize == 0 {
+		bufferSize = param.BufferSize
+	}
+
 	if addr == nil {
 		addr = &net.UDPAddr{
 			IP:   net.ParseIP(param.Localhost),
@@ -61,10 +66,7 @@ func NewGameserverClient(addr *net.UDPAddr, gameserverConn NetConn, incomingMess
 	}
 
 	if gameserverConn == nil {
-		gameserverConn = NewUDPConn(net.UDPAddr{
-			IP:   net.ParseIP(param.Localhost),
-			Port: param.GameserverPort,
-		})
+		gameserverConn = NewUDPConn(*addr)
 	}
 
 	return &GameserverClient{

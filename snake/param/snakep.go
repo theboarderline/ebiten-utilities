@@ -2,6 +2,7 @@ package param
 
 // Snake parameters
 const (
+	BufferSize             = 8192
 	Localhost              = "127.0.0.1"
 	GameserverPort         = 7777
 	ClientPort             = 8080

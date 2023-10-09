@@ -19,7 +19,7 @@ var _ = Describe("Udp Integration", func() {
 		in = make(chan events.Event, 1)
 		out = make(chan events.Event, 1)
 
-		gameserverClient = client.NewGameserverClient(nil, nil, in, out)
+		gameserverClient = client.NewGameserverClient(0, nil, &client.MockConn{}, in, out)
 		Expect(gameserverClient).NotTo(BeNil())
 		Expect(gameserverClient.IsConnected()).To(BeTrue())
 
