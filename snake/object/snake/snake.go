@@ -56,6 +56,7 @@ func init() {
 
 type Snake struct {
 	Name            string                            `json:"name"`
+	Alive           bool                              `json:"alive"`
 	Speed           float64                           `json:"speed"`
 	UnitHead        *Unit                             `json:"head"`
 	unitTail        *Unit                             `json:"tail"`
