@@ -78,6 +78,7 @@ func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float
 		Speed:    speed,
 		UnitHead: initialUnit,
 		UnitTail: initialUnit,
+		Alive:    true,
 	}
 
 	return snake
