@@ -22,52 +22,27 @@ package snake
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/theboarderline/ebiten-utilities/snake/events"
+	c "github.com/theboarderline/ebiten-utilities/server/core"
+	"github.com/theboarderline/ebiten-utilities/server/events"
+	"github.com/theboarderline/ebiten-utilities/server/param"
 	"image/color"
 	"log"
 	"math"
 	"math/rand"
-	"time"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	c "github.com/theboarderline/ebiten-utilities/snake/core"
-	"github.com/theboarderline/ebiten-utilities/snake/param"
-	"github.com/theboarderline/ebiten-utilities/snake/shader"
 )
-
-var (
-	imageCircle    = ebiten.NewImage(param.SnakeWidth, param.SnakeWidth)
-	shaderMouth    = shader.New(shader.PathCircleMouth)
-	MouthEnabled   = false
-	optTriangEmpty ebiten.DrawTrianglesOptions
-)
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-
-	// Prepare circle image whose radius is snake's half width
-	imageCircle.DrawRectShader(param.SnakeWidth, param.SnakeWidth, &shader.Circle, &ebiten.DrawRectShaderOptions{
-		Uniforms: map[string]interface{}{
-			"Radius": float32(param.RadiusSnake),
-		},
-	})
-
-}
 
 type Snake struct {
-	Name            string                            `json:"name"`
-	Dead            bool                              `json:"alive"`
-	Speed           float64                           `json:"speed"`
-	UnitHead        *Unit                             `json:"head"`
-	unitTail        *Unit                             `json:"tail"`
-	turnPrev        *Turn                             `json:"turnPrev"`
-	turnQueue       []*Turn                           `json:"turnQueue"`
-	distAfterTurn   float64                           `json:"distAfterTurn"`
-	growthRemaining float64                           `json:"growthRemaining"`
-	growthTarget    float64                           `json:"growthTarget"`
-	FoodEaten       uint8                             `json:"foodEaten"`
-	color           *color.RGBA                       `json:"color"`
-	drawOptsHead    ebiten.DrawTrianglesShaderOptions `json:"drawOptsHead"`
+	Name            string  `json:"name"`
+	Alive           bool    `json:"alive"`
+	Speed           float64 `json:"speed"`
+	FoodEaten       uint8   `json:"foodEaten"`
+	UnitHead        *Unit   `json:"head"`
+	UnitTail        *Unit   `json:"tail"`
+	turnPrev        *Turn
+	turnQueue       []*Turn
+	distAfterTurn   float64
+	growthRemaining float64
+	growthTarget    float64
 }
 
 func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float64, direction events.DirectionT, color *color.RGBA) *Snake {
@@ -102,14 +77,7 @@ func NewSnake(name string, headCenter c.Vec64, initialLength uint16, speed float
 		Name:     name,
 		Speed:    speed,
 		UnitHead: initialUnit,
-		unitTail: initialUnit,
-		color:    color,
-		drawOptsHead: ebiten.DrawTrianglesShaderOptions{
-			Uniforms: map[string]interface{}{
-				"Radius":      float32(param.RadiusSnake),
-				"RadiusMouth": float32(param.RadiusMouth),
-			},
-		},
+		UnitTail: initialUnit,
 	}
 
 	return snake
@@ -148,7 +116,7 @@ func NewRandSnake(name string) *Snake {
 }
 
 func (s *Snake) Update(distToFood float32) {
-	if s.Dead {
+	if !s.Alive {
 		return
 	}
 
@@ -166,32 +134,8 @@ func (s *Snake) Update(distToFood float32) {
 }
 
 func (s *Snake) updateHead(dist float64, distToFood float32) {
-	// Increase head length
-	s.UnitHead.length += dist
-
-	// Move head
-	switch s.UnitHead.Direction {
-	case events.DirectionRight:
-		s.UnitHead.moveRight(dist)
-	case events.DirectionLeft:
-		s.UnitHead.moveLeft(dist)
-	case events.DirectionUp:
-		s.UnitHead.moveUp(dist)
-	case events.DirectionDown:
-		s.UnitHead.moveDown(dist)
-	}
-
-	if s.UnitHead != s.unitTail { // Avoid unnecessary updates
-		s.UnitHead.update(distToFood)
-	}
-
-	// Distance to food
-
-	// Update draw options
-	proxToFood := 1.0 - distToFood/param.MouthAnimStartDistance
-	s.drawOptsHead.Uniforms["Direction"] = float32(s.UnitHead.Direction)
-	s.drawOptsHead.Uniforms["ProximityToFood"] = proxToFood
-
+	s.UnitHead.Length += dist
+	s.UnitHead.ProximityToFood = 1.0 - distToFood/param.MouthAnimStartDistance
 	s.distAfterTurn += dist
 }
 
@@ -207,17 +151,16 @@ func (s *Snake) updateTail(dist float64, distToFood float32) {
 		s.growthTarget = s.growthRemaining
 	}
 
-	// Decrease tail length
-	s.unitTail.length -= decreaseAmount
+	// Decrease tail Length
+	s.UnitTail.Length -= decreaseAmount
 
-	// Delete tail if its length is less than width of the snake
-	if (s.unitTail.prev != nil) && (s.unitTail.length <= param.SnakeWidth) {
-		s.unitTail.prev.length += s.unitTail.length
-		s.unitTail = s.unitTail.prev
-		s.unitTail.Next = nil
+	// Delete tail if its Length is less than width of the snake
+	if (s.UnitTail.Prev != nil) && (s.UnitTail.Length <= param.SnakeWidth) {
+		s.UnitTail.Prev.Length += s.UnitTail.Length
+		s.UnitTail = s.UnitTail.Prev
+		s.UnitTail.Next = nil
 	}
 
-	s.unitTail.update(distToFood)
 }
 
 func (s *Snake) TurnTo(newTurn *Turn, isFromQueue bool) {
@@ -241,20 +184,25 @@ func (s *Snake) TurnTo(newTurn *Turn, isFromQueue bool) {
 	oldHead := s.UnitHead
 
 	// Decide on the color of the new head unit.
-	newColor := s.color
+	//newColor := s.color
 	// if param.DebugUnits && (oldHead.color == s.color) {
 	// 	newColor = &param.ColorSnake2
 	// }
 
 	// Create a new head unit.
-	newHead := NewUnit(oldHead.HeadCenter, 0, newTurn.directionTo, newColor)
+	newHead := NewUnit(oldHead.HeadCenter, 0, newTurn.directionTo, &color.RGBA{
+		R: 255,
+		G: 255,
+		B: 255,
+		A: 255,
+	})
 
 	// Add the new head unit to the beginning of the unit doubly linked list.
 	newHead.Next = oldHead
-	oldHead.prev = newHead
+	oldHead.Prev = newHead
 	s.UnitHead = newHead
 
-	// Update prev turn
+	// Update Prev turn
 	s.turnPrev = newTurn
 }
 
@@ -279,33 +227,4 @@ func (s *Snake) LastDirection() events.DirectionT {
 
 	// return current head direction
 	return s.UnitHead.Direction
-}
-
-func (s *Snake) Draw(dst *ebiten.Image) {
-	if s.Dead {
-		return
-	}
-
-	for unit := s.UnitHead; unit != nil; unit = unit.Next {
-		// Draw circle centered on unit's head center
-		vertices, indices := unit.CompTriangHead.Triangles()
-		if MouthEnabled && (unit == s.UnitHead) {
-			dst.DrawTrianglesShader(vertices, indices, shaderMouth, &s.drawOptsHead)
-		} else {
-			dst.DrawTriangles(vertices, indices, imageCircle, &optTriangEmpty)
-		}
-
-		if unit.Next == nil {
-			// Draw circle centered on unit's tail center
-			vertices, indices = unit.CompTriangTail.Triangles()
-			dst.DrawTriangles(vertices, indices, imageCircle, &optTriangEmpty)
-		}
-
-		// Draw rectangle starts from unit's head center to the tail head center
-		unit.CompBody.Draw(dst)
-
-		if param.DebugUnits {
-			unit.DrawDebugInfo(dst)
-		}
-	}
 }
